@@ -1,0 +1,50 @@
+# サイトの「最新の話題」用に、フォーラムの最新の話題を latest.json に書き出す。
+# 話題・返信が増えたとき、解決の印が付いたとき、6 時間ごと、手で動かしたときに動く。
+name: latest-discussions
+
+on:
+  discussion:
+    types: [created, edited, deleted, transferred, category_changed, answered, unanswered, pinned, unpinned]
+  discussion_comment:
+    types: [created, deleted]
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  discussions: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 最新の話題を取り出す
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api graphql -F owner="${{ github.repository_owner }}" -F name="${{ github.event.repository.name }}" -f query='
+            query($owner:String!, $name:String!) {
+              repository(owner:$owner, name:$name) {
+                discussions(first: 8, orderBy:{field: UPDATED_AT, direction: DESC}) {
+                  nodes {
+                    title url createdAt updatedAt isAnswered
+                    comments { totalCount }
+                    category { name emoji }
+                  }
+                }
+              }
+            }' | jq '{updated: (now | todate), items: [.data.repository.discussions.nodes[] | {title, url, createdAt, updatedAt, answered: .isAnswered, comments: .comments.totalCount, category: .category.name, emoji: .category.emoji}]}' > latest.json
+      - name: 変わっていたら保存する
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add latest.json
+          # 「updated」の時刻だけが違うときは保存しない
+          if git diff --cached --quiet; then exit 0; fi
+          OLD=$(git show HEAD:latest.json 2>/dev/null | jq -c '.items' || echo none)
+          NEW=$(jq -c '.items' latest.json)
+          if [ "$OLD" = "$NEW" ]; then git reset -q; exit 0; fi
+          git commit -m "最新の話題を更新"
+          git push
