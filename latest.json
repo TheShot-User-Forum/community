@@ -1,6 +1,16 @@
 {
-  "updated": "2026-10-22T07:35:55Z",
+  "updated": "2026-10-22T07:36:26Z",
   "items": [
+    {
+      "title": "Sony のカメラがつながりません",
+      "url": "https://github.com/Secka-User-Forum/community/discussions/1",
+      "createdAt": "2026-10-17T12:08:25Z",
+      "updatedAt": "2026-10-22T07:36:20Z",
+      "answered": false,
+      "comments": 0,
+      "category": "Q&A",
+      "emoji": ":pray:"
+    },
     {
       "title": "書き込むときのお願い",
       "url": "https://github.com/Secka-User-Forum/community/discussions/3",
@@ -20,16 +30,6 @@
       "comments": 0,
       "category": "カメラ・ケーブル・機材",
       "emoji": ":camera:"
-    },
-    {
-      "title": "Sony のカメラがつながりません",
-      "url": "https://github.com/Secka-User-Forum/community/discussions/1",
-      "createdAt": "2026-10-17T12:08:25Z",
-      "updatedAt": "2026-10-17T12:08:25Z",
-      "answered": false,
-      "comments": 0,
-      "category": "Q&A",
-      "emoji": ":pray:"
     }
   ]
 }
